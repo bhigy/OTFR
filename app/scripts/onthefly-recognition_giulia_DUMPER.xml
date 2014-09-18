@@ -1,0 +1,89 @@
+
+<application>
+<name>On The Fly Recognition Giulia Dumper</name>
+
+        <!-- Modules -->
+        
+		<module>
+                <name>dataDumper</name>
+				<parameters> --name /dump/onTheFlyRecognition/img:o --dir /dumping/imgs --type image</parameters>
+				<node>localhost</node>
+				<tag>dumperImgs</tag>
+        </module>
+		
+		<module>
+                <name>dataDumper</name>
+				<parameters> --name /dump/onTheFlyRecognition/imginfo:o --dir /dumping/imginfos --type bottle</parameters>
+				<node>localhost</node>
+				<tag>dumperClasses</tag>
+        </module>
+		
+		<module>
+                <name>dataDumper</name>
+				<parameters> --name /dump/linearClassifier/scores:o --dir /dumping/scores --type bottle</parameters>
+                <node>localhost</node>
+                <tag>dumperScores</tag>
+        </module>
+		
+		
+		<module>
+                <name>dataDumper</name>
+				<parameters> --name /dump/onTheFlyRecognition/crop:o --dir /dumping/crops --type image</parameters>
+				<node>localhost</node>
+				<tag>dumperCrops</tag>
+        </module>
+
+		<module>
+                <name>dataDumper</name>
+				<parameters> --name /dump/sparseCoder/sift:o --dir /dumping/SIFT --type bottle</parameters>
+                <node>localhost</node>
+                <tag>dumperSIFT</tag>
+        </module>
+		
+		<module>
+                <name>dataDumper</name>
+				<parameters> --name /dump/sparseCoder/code:o --dir /dumping/codes --type bottle</parameters>
+                <node>localhost</node>
+                <tag>dumperCodes</tag>
+        </module>
+		
+        <!-- Connections -->
+
+		<connection>
+                <from>/onTheFlyRecognition/img:o</from>
+                <to>/dump/onTheFlyRecognition/img:o</to>
+                <protocol>mcast</protocol>
+        </connection>
+		
+		<connection>
+                <from>/onTheFlyRecognition/imginfo:o</from>
+                <to>/dump/onTheFlyRecognition/imginfo:o</to>
+                <protocol>tcp</protocol>
+        </connection>
+		
+		<connection>
+                <from>/linearClassifier/scores:o</from>
+                <to>/dump/linearClassifier/scores:o</to>
+                <protocol>mcast</protocol>
+        </connection>
+		
+		<connection>
+                <from>/onTheFlyRecognition/crop:o</from>
+                <to>/dump/onTheFlyRecognition/crop:o</to>
+                <protocol>mcast</protocol>
+        </connection>
+		
+		<connection>
+                <from>/sparseCoder/sift:o</from>
+                <to>/dump/sparseCoder/sift:o</to>
+                <protocol>tcp</protocol>
+        </connection>
+		
+        <connection>
+                <from>/sparseCoder/code:o</from>
+                <to>/dump/sparseCoder/code:o</to>
+                <protocol>mcast</protocol>
+        </connection>
+        
+</application>
+

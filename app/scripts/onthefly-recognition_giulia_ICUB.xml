@@ -1,0 +1,157 @@
+
+<application>
+<name>On The Fly Recognition Giulia</name>
+
+        <dependencies>
+                <port>/icub/camcalib/left/out</port>
+        </dependencies>
+
+        <!-- Modules -->
+        
+        <module>
+                <name>motionCUT</name>
+                <parameters>--name motionCUT/left --coverXratio 0.7 --coverYratio 0.7 --framesPersistence 2 --numThreads 5 --nodesStep 6</parameters>
+                <node>icub-b1</node>
+                <tag>motionCUTLeft</tag>
+        </module>
+		
+		<module>
+                <name>actionsRenderingEngine</name>
+                <node>icub15</node>
+                <tag>are</tag>
+        </module>
+		
+		<module>
+                <name>managerOnTheFly_giulia</name>  
+				<parameters>--observe_human_time_classify 20</parameters>
+                <node>icub15</node>
+                <tag>manager_giulia</tag>
+        </module>
+		
+		<module>
+                <name>sparseCoder_giulia</name>
+                <node>icub-cuda</node>
+                <tag>image_coder_giulia</tag>
+        </module>
+		
+		<module>
+                <name>linearClassifierModule_giulia</name>
+                <node>icub-b2</node>
+                <tag>classifier_giulia</tag>
+        </module>
+
+        <module>
+                <name>yarpview</name>
+                <parameters>--name /onTheFlyRecognition/view</parameters>
+                <node>icub15</node>
+                <tag>main_viewer_giulia</tag>
+        </module>
+
+        <module>
+                <name>yarpview</name>
+                <parameters>--name /onTheFlyRecognition/confidence</parameters>
+                <node>icub15</node>
+                <tag>conf_viewer_giulia</tag>
+        </module>
+		
+        <!-- Connections -->
+
+        <!-- motionCUT -->
+        <connection>
+                <from>/icub/camcalib/left/out</from>
+                <to>/motionCUT/left/img:i</to>
+                <protocol>mcast</protocol>
+        </connection> 
+
+
+        <!-- ActionsRenderingEngine -->
+        <connection>
+                <from>/motionCUT/left/blobs:o</from>
+                <to>/actionsRenderingEngine/left/blobs:i</to>
+                <protocol>udp</protocol>
+        </connection>
+
+
+        <!-- Coding -->
+        <connection>
+                <from>/icub/camcalib/left/out</from>
+                <to>/onTheFlyRecognition/img:i</to>
+                <protocol>mcast</protocol>
+        </connection>
+
+        <connection>
+                <from>/motionCUT/left/blobs:o</from>
+                <to>/onTheFlyRecognition/blobs:i</to>
+                <protocol>mcast</protocol>
+        </connection>
+
+        <connection>
+                <from>/onTheFlyRecognition/crop:o</from>
+                <to>/sparseCoder/img:i</to>
+                <protocol>mcast</protocol>
+        </connection>
+
+        <connection>
+                <from>/sparseCoder/code:o</from>
+                <to>/linearClassifier/features:i</to>
+                <protocol>tcp</protocol>
+        </connection> 
+
+        <connection>
+                <from>/linearClassifier/scores:o</from>
+                <to>/onTheFlyRecognition/scores:i</to>
+                <protocol>tcp</protocol>
+        </connection> 
+
+
+        <!-- ActionsRenderingEngine -->
+		
+        <connection>
+                <from>/onTheFlyRecognition/are/rpc</from>
+                <to>/actionsRenderingEngine/rpc</to>
+                <protocol>tcp</protocol>
+        </connection>
+        
+        <connection>
+                <from>/onTheFlyRecognition/are/hand:io</from>
+                <to>/actionsRenderingEngine/get:io</to>
+                <protocol>tcp</protocol>
+        </connection>
+
+        <connection>
+                <from>/onTheFlyRecognition/are/get:io</from>
+                <to>/actionsRenderingEngine/get:io</to>
+                <protocol>tcp</protocol>
+        </connection>
+
+        <connection>
+                <from>/onTheFlyRecognition/are/cmd:io</from>
+                <to>/actionsRenderingEngine/cmd:io</to>
+                <protocol>tcp</protocol>
+        </connection>
+
+		<!-- Rpc -->
+		
+        <connection>
+                <from>/onTheFlyRecognition/classifier:io</from>
+                <to>/linearClassifier_giulia/rpc</to>
+                <protocol>tcp</protocol>
+        </connection>
+
+
+        <!-- Visualization -->
+		
+        <connection>
+                <from>/onTheFlyRecognition/show:o</from>
+                <to>/onTheFlyRecognition/view</to>
+                <protocol>mcast</protocol>
+        </connection>
+        
+        <connection>
+                <from>/onTheFlyRecognition/confidence:o</from>
+                <to>/onTheFlyRecognition/confidence</to>
+                <protocol>mcast</protocol>
+        </connection>
+        
+        
+</application>

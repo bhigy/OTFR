@@ -57,15 +57,20 @@ using namespace yarp::math;
 #define                 STATE_IDLE          0
 #define                 STATE_TRAINING      1
 #define                 STATE_CLASSIFY      2
+#define                 STATE_OBSERVING     3
 
 #define                 MODE_ROBOT          0
 #define                 MODE_HUMAN          1
 
 #define                 CMD_IDLE            VOCAB4('i','d','l','e')
+
+#define                 CMD_OBSERVE         VOCAB4('o','b','s','e')
 #define                 CMD_TRAIN           VOCAB4('t','r','a','i')
 #define                 CMD_CLASSIFY        VOCAB4('c','l','a','s')
+
 #define                 CMD_ROBOT           VOCAB4('r','o','b','o')
 #define                 CMD_HUMAN           VOCAB4('h','u','m','a')
+
 #define                 CMD_FORGET          VOCAB4('f','o','r','g')
 
 
@@ -268,10 +273,19 @@ public:
                 
                                 
                 bool visible=true;
+
                 if(state==STATE_TRAINING)
                 {
                     text_color=cvScalar(255,0,0);
-                    text_string="train: "+current_class;
+                    text_string="train";
+
+                    visible=blink_visible;
+                }
+
+                if(state==STATE_OBSERVING)
+                {
+                    text_color=cvScalar(255,0,0);
+                    text_string="observe: " + current_class;
                     
                     visible=blink_visible;
                 }
@@ -724,7 +738,7 @@ private:
                 return false;
         }
 
-        //resume the storer
+        //resume feature storing
         thr_transformer->resumeCoding();
 
         //perform the exploration of the hand
@@ -735,7 +749,7 @@ private:
         command.addString("no_sacc");
         port_rpc_are_cmd.write(command,reply);
 
-        //interrupt the storer
+        //interrupt feature storing
         thr_transformer->interruptCoding();
 
         return true;
@@ -744,10 +758,11 @@ private:
     bool observe_human()
     {
         thr_transformer->resumeCoding();
-        if(state==STATE_TRAINING)
+        if (state==STATE_OBSERVING)
         {
             Time::delay(observe_human_time_training);
             thr_transformer->interruptCoding();
+            speak("Image acquisition done. ");
             thr_storer->reset_scores();
         }
         else 
@@ -760,11 +775,12 @@ private:
     {
         switch(state)
         {
-            case STATE_TRAINING:
+
+            case STATE_OBSERVING:
             {
                 string current_class;
                 thr_transformer->get_current_class(current_class);
-                speak("Ok, show me this wonderful "+current_class);
+                speak("Ok, show me this wonderful " + current_class);
 
                 break;
             }
@@ -777,22 +793,26 @@ private:
         }
 
         bool ok;
-        switch(mode)
-        {
-            case MODE_ROBOT:
-            {
-                ok=observe_robot();
-                break;
-            }
 
-            case MODE_HUMAN:
+        if (state==STATE_OBSERVING || state==STATE_CLASSIFY) 
+        {
+            switch(mode)
             {
-                // time for the single operator to position the object
-                speak("I'm waiting...");
-                Time::delay(single_operator_time);
-                speak("Start!");
-                ok=observe_human();
-                break;
+                case MODE_ROBOT:
+                {
+                    ok=observe_robot();
+                    break;
+                }
+
+                case MODE_HUMAN:
+                {
+                    // time for the single operator to position the object
+                    speak("I'm waiting...");
+                    Time::delay(single_operator_time);
+                    speak("Image acquisition started.");
+                    ok=observe_human();
+                    break;
+                }
             }
         }
 
@@ -895,6 +915,12 @@ private:
                     complete();
                 break;
             }
+
+            case STATE_OBSERVING:
+            {
+                complete();
+                break;
+            }
         }
 
     }
@@ -912,9 +938,10 @@ private:
                 done=true;
         }
 
-        string current_class;
-        thr_transformer->get_current_class(current_class);
-        speak("Ok, now I know the "+current_class);
+        //string current_class;
+        //thr_transformer->get_current_class(current_class);
+        //speak("Ok, now I know the "+current_class);
+        speak("Ok, now I know the observed objects");
         curr_time=Time::now();
 
         set_state(STATE_IDLE);
@@ -933,8 +960,8 @@ public:
 
         string name=rf.find("name").asString().c_str();
 
-        observe_human_time_training = rf.check("observe_human_time_training",Value(30.0)).asDouble();
-        observe_human_time_classify = rf.check("observe_human_time_classify",Value(5.0)).asDouble();
+        observe_human_time_training = rf.check("observe_human_time_training",Value(20.0)).asDouble();
+        observe_human_time_classify = rf.check("observe_human_time_classify",Value(15.0)).asDouble();
         single_operator_time = rf.check("single_operator_time",Value(5.0)).asDouble();
 
         class_itr_max=rf.check("class_iter_max",Value(3)).asInt();
@@ -977,8 +1004,12 @@ public:
             return;
 
         mutex.wait();
-        observe();
+
+        if (state==STATE_OBSERVING || state==STATE_CLASSIFY)
+            observe();
+
         decide();
+
         mutex.post();
     }
 
@@ -1005,7 +1036,7 @@ public:
                 break;
             }
 
-            case CMD_TRAIN:
+            case CMD_OBSERVE:
             {
                 mutex.wait();
 
@@ -1021,7 +1052,7 @@ public:
                     {
                         thr_transformer->set_current_class(class_name);
                         thr_transformer->set_true_class(class_name);
-                        set_state(STATE_TRAINING);
+                        set_state(STATE_OBSERVING);
 
                         bool found=false;
                         for(unsigned int i=0; i<known_objects.size(); i++)
@@ -1034,13 +1065,29 @@ public:
                             sort(known_objects.begin(),known_objects.end());
                         }
 
-                        reply.addString(("learning "+class_name).c_str());
+                        reply.addString(("storing " + class_name).c_str());
                     }
                     else
                         reply.addString("classifier busy!");
                 }
                 else
                     reply.addString("Error! Need to specify a class!");
+
+                mutex.post();
+                break;
+            }
+
+            case CMD_TRAIN:
+            {
+                mutex.wait();
+
+                if(command.size()==1)
+                {
+                    set_state(STATE_TRAINING);
+                    reply.addString("learning observed objects");
+                }
+                else
+                    reply.addString("Command not recognized!");
 
                 mutex.post();
                 break;
@@ -1159,6 +1206,7 @@ public:
                 mutex.post();
                 break;
             }
+
             case CMD_FORGET:
             {
                 mutex.wait();

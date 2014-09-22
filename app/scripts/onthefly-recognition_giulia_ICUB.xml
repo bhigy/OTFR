@@ -23,7 +23,7 @@
 		
 		<module>
                 <name>managerOnTheFly_giulia</name>  
-				<parameters>--observe_human_time_classify 20</parameters>
+				<parameters>--observe_human_time_training 20 --observe_human_time_classify 15 --single_operator_time 5</parameters>
                 <node>icub15</node>
                 <tag>manager_giulia</tag>
         </module>
@@ -134,7 +134,7 @@
 		
         <connection>
                 <from>/onTheFlyRecognition/classifier:io</from>
-                <to>/linearClassifier_giulia/rpc</to>
+                <to>/linearClassifier/rpc</to>
                 <protocol>tcp</protocol>
         </connection>
 

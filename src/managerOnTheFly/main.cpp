@@ -100,7 +100,10 @@ private:
     int                                 radius_crop_robot;
     int                                 radius_crop_human;
 
-    ImageOf<PixelBgr>                   img_crop;
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    //ImageOf<PixelBgr>                   img_crop;
+    ImageOf<PixelRgb>                   img_crop;
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     string                              current_class;
     string                              true_class;

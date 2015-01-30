@@ -60,7 +60,8 @@ using namespace yarp::math;
 #define                 STATE_OBSERVING     3
 
 #define                 MODE_ROBOT          0
-#define                 MODE_HUMAN          1
+#define                 MODE_HUMAN_IDLE     1
+#define                 MODE_HUMAN_TRACK    2
 
 #define                 CMD_IDLE            VOCAB4('i','d','l','e')
 
@@ -176,7 +177,7 @@ public:
         int x,y;
         int pixelCount=0;
 
-        if(mode==MODE_HUMAN)
+        if(mode==MODE_HUMAN_TRACK || mode==MODE_HUMAN_IDLE)
         {
             Bottle *blobs=port_in_blobs.read(false);
             if(blobs!=NULL)
@@ -757,12 +758,61 @@ private:
 
     bool observe_human()
     {
-        thr_transformer->resumeCoding();
+
+        if (mode==MODE_HUMAN_IDLE)
+        {
+            // begin tracking code
+            Bottle cmd_are,reply_are;
+
+            cmd_are.addString("idle");
+            port_rpc_are_cmd.write(cmd_are,reply_are);
+            if(reply_are.size()>0 && reply_are.get(0).asVocab()==ACK)
+            {
+                reply_are.clear();
+                cmd_are.clear();
+                cmd_are.addString("track");
+                cmd_are.addString("motion");
+                cmd_are.addString("no_sacc");
+                port_rpc_are_cmd.write(cmd_are,reply_are);
+                if(reply_are.size()>0 && reply_are.get(0).asVocab()==ACK)
+                {
+                    set_mode(MODE_HUMAN_TRACK);
+                    speak("Begin tracking mode.");
+                }
+                else
+                    speak("Cannot set ARE to 'track motion no_sacc'");
+            }
+            else
+                speak("Cannot set ARE to 'idle'");
+            // end tracking code
+
+            // time for the single operator to position the object
+            speak("I'm waiting for you to position...");
+            Time::delay(single_operator_time);
+            speak("*************************** Image acquisition started ***************************");
+            thr_transformer->resumeCoding();
+        }
+
         if (state==STATE_OBSERVING)
         {
             Time::delay(observe_human_time_training);
             thr_transformer->interruptCoding();
-            speak("Image acquisition done. ");
+
+            // begin tracking code
+            Bottle cmd_are,reply_are;
+
+            cmd_are.addString("idle");
+            port_rpc_are_cmd.write(cmd_are,reply_are);
+            if(reply_are.size()>0 && reply_are.get(0).asVocab()==ACK)
+            {
+                set_mode(MODE_HUMAN_IDLE);
+                speak("End tracking mode.");
+            }
+            else
+                speak("Cannot set ARE to 'idle'");
+            // end tracking code
+
+            speak("*************************** Image acquisition done ******************************");
             thr_storer->reset_scores();
         }
         else 
@@ -792,7 +842,7 @@ private:
             }
         }
 
-        bool ok;
+        bool ok=false;
 
         if (state==STATE_OBSERVING || state==STATE_CLASSIFY) 
         {
@@ -804,15 +854,18 @@ private:
                     break;
                 }
 
-                case MODE_HUMAN:
+                case MODE_HUMAN_IDLE:
                 {
-                    // time for the single operator to position the object
-                    speak("I'm waiting...");
-                    Time::delay(single_operator_time);
-                    speak("Image acquisition started.");
                     ok=observe_human();
                     break;
                 }
+
+                case MODE_HUMAN_TRACK:
+                {
+                    ok=observe_human();
+                    break;
+                }
+
             }
         }
 
@@ -821,6 +874,9 @@ private:
 
     bool complete_robot()
     {
+
+        thr_transformer->interruptCoding();
+
         //just drop the object
         Bottle command,reply;
         command.addString("give");
@@ -835,13 +891,30 @@ private:
 
     bool complete_human()
     {
-        //do nothing
+
+        thr_transformer->interruptCoding();
+
+        // begin tracking code
+        Bottle cmd_are,reply_are;
+
+        cmd_are.addString("idle");
+        port_rpc_are_cmd.write(cmd_are,reply_are);
+        if(reply_are.size()>0 && reply_are.get(0).asVocab()==ACK)
+        {
+            set_mode(MODE_HUMAN_IDLE);
+            speak("End tracking mode.");
+        }
+        else
+            speak("Cannot set ARE to 'idle'");
+        // end tracking code
+
         return true;
     }
 
     bool complete()
     {
-        bool ok;
+        bool ok=false;
+
         switch(mode)
         {
             case MODE_ROBOT:
@@ -850,15 +923,20 @@ private:
                 break;
             }
 
-            case MODE_HUMAN:
+            case MODE_HUMAN_TRACK:
             {
                 ok=complete_human();
+                break;
+            }
+
+            case MODE_HUMAN_IDLE:
+            {
+                ok=true;
                 break;
             }
         }
 
         //clear the buffer
-        //thr_transformer->interruptCoding();
         //thr_storer->reset_scores();
 
         set_state(STATE_IDLE);
@@ -885,7 +963,6 @@ private:
             else
             {
                 speak("Sorry, I cannot recognize this object. I am the shame of the whole robot world.");
-                thr_transformer->interruptCoding();
                 return true;
             }
         }
@@ -893,7 +970,6 @@ private:
         {
             curr_time=Time::now();
             speak("I think this is a "+current_class);
-            thr_transformer->interruptCoding();
             return true;
         }
     }
@@ -987,7 +1063,7 @@ public:
         thr_transformer->interruptCoding();
 
         set_state(STATE_IDLE);
-        set_mode(MODE_HUMAN);
+        set_mode(MODE_HUMAN_IDLE);
         curr_time=Time::now();
         reset_label_time=5.0;
         return true;
@@ -995,7 +1071,7 @@ public:
 
     void run()
     {
-        if(Time::now()-curr_time> reset_label_time)
+        if(Time::now()-curr_time > reset_label_time)
         {
             thr_transformer->set_current_class("?");
             curr_time=Time::now();
@@ -1179,29 +1255,19 @@ public:
             {
                 mutex.wait();
 
+                // begin tracking code
                 Bottle cmd_are,reply_are;
+
                 cmd_are.addString("idle");
                 port_rpc_are_cmd.write(cmd_are,reply_are);
-
                 if(reply_are.size()>0 && reply_are.get(0).asVocab()==ACK)
                 {
-                    reply_are.clear();
-                    cmd_are.clear();
-                    cmd_are.addString("track");
-                    cmd_are.addString("motion");
-                    cmd_are.addString("no_sacc");
-                    port_rpc_are_cmd.write(cmd_are,reply_are);
-
-                    if(reply_are.size()>0 && reply_are.get(0).asVocab()==ACK)
-                    {
-                        set_mode(MODE_HUMAN);
-                        reply.addString("ack");
-                    }
-                    else
-                        reply.addString("Error!");
+                    set_mode(MODE_HUMAN_IDLE);
+                    reply.addString("ack");
                 }
                 else
                     reply.addString("Error!");
+                // end tracking code
 
                 mutex.post();
                 break;

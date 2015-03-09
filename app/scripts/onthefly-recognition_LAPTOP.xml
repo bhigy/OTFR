@@ -1,6 +1,6 @@
 
 <application>
-<name>On The Fly Recognition Giulia</name>
+<name>On The Fly Recognition iCubWorld</name>
 
         <dependencies>
                 <port>/icub/camcalib/right/out</port>
@@ -9,20 +9,20 @@
         <!-- Modules -->
         
         <module>
-                <name>managerOnTheFly_giulia</name>  
+                <name>managerOnTheFly_iCubWorld</name>  
 		<parameters>--observe_human_time_classify 20</parameters>             
                 <node>localhost</node>
                 <tag>manager</tag>
         </module>
         
         <module>
-                <name>sparseCoder_giulia</name>
+                <name>sparseCoder_iCubWorld</name>
                 <node>localhost</node>
                 <tag>image_coder</tag>
         </module>
 
 		<module>
-                <name>linearClassifierModule_giulia</name>
+                <name>linearClassifierModule_iCubWorld</name>
                 <node>localhost</node>
                 <tag>classifier</tag>
         </module>

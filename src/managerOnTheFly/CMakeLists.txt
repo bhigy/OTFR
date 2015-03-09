@@ -3,7 +3,7 @@
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
 cmake_minimum_required(VERSION 2.6)
-set(PROJECTNAME managerOnTheFly_giulia)
+set(PROJECTNAME managerOnTheFly_iCubWorld)
 project(${PROJECTNAME})
 
 find_package(OpenCV)

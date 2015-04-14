@@ -1,9 +1,10 @@
 
 <application>
-<name>On The Fly Recognition Giulia</name>
+<name>On The Fly Recognition iCub World</name>
 
         <dependencies>
                 <port>/icub/camcalib/left/out</port>
+                <port>/SFM/disp:o</port>
         </dependencies>
 
         <!-- Modules -->
@@ -14,53 +15,74 @@
                 <node>icub-b1</node>
                 <tag>motionCUTLeft</tag>
         </module>
-		
+	
+		<module>
+                <name>nearBlobber</name>
+                <node>icub-cuda</node>
+                <tag>nearBlobber</tag>
+        </module>
+        
 		<module>
                 <name>actionsRenderingEngine</name>
                 <node>icub15</node>
-                <tag>are</tag>
+                <tag>actionsRenderingEngine</tag>
         </module>
 		
 		<module>
-                <name>managerOnTheFly_giulia</name>  
+                <name>managerOnTheFly_iCubWorld</name>  
 				<parameters>--observe_human_time_training 20 --observe_human_time_classify 15 --single_operator_time 5</parameters>
                 <node>icub15</node>
-                <tag>manager_giulia</tag>
+                <tag>managerOnTheFly_iCubWorld</tag>
         </module>
 		
 		<module>
-                <name>sparseCoder_giulia</name>
+                <name>sparseCoder</name>
                 <node>icub-cuda</node>
-                <tag>image_coder_giulia</tag>
+                <tag>sparseCoder</tag>
         </module>
 		
 		<module>
-                <name>linearClassifierModule_giulia</name>
-                <node>icub-b2</node>
-                <tag>classifier_giulia</tag>
+                <name>caffeCoder</name>
+                <node>icub-cuda</node>
+                <tag>caffeCoder</tag>
+        </module>
+        
+		<module>
+                <name>linearClassifierModule</name>
+                <node>icub-cuda</node>
+                <tag>linearClassifierModule</tag>
         </module>
 
         <module>
                 <name>yarpview</name>
                 <parameters>--name /onTheFlyRecognition/view</parameters>
                 <node>icub15</node>
-                <tag>main_viewer_giulia</tag>
+                <tag>viewer_box</tag>
         </module>
 
         <module>
                 <name>yarpview</name>
-                <parameters>--name /onTheFlyRecognition/confidence</parameters>
+                <parametergiuliaboxs>--name /onTheFlyRecognition/confidence</parameters>
                 <node>icub15</node>
-                <tag>conf_viewer_giulia</tag>
+                <tag>viewer_hist</tag>
         </module>
 		
         <!-- Connections -->
+
 
         <!-- motionCUT -->
         <connection>
                 <from>/icub/camcalib/left/out</from>
                 <to>/motionCUT/left/img:i</to>
                 <protocol>mcast</protocol>
+        </connection> 
+        
+        
+        <!-- nearBlobber -->
+        <connection>
+                <from external="true">/SFM/disp:o</from>
+                <to external="true">/nearBlobber/img:i</to>
+                <protocol>udp</protocol>
         </connection> 
 
 
@@ -84,7 +106,19 @@
                 <to>/onTheFlyRecognition/blobs:i</to>
                 <protocol>mcast</protocol>
         </connection>
+        
+        <connection>
+                <from>/nearBlobber/blobs:o</from>
+                <to>/onTheFlyRecognition/blobs:i</to>
+                <protocol>mcast</protocol>
+        </connection>
 
+        <connection>
+                <from>/onTheFlyRecognition/crop:o</from>
+                <to>/caffeCoder/img:i</to>
+                <protocol>mcast</protocol>
+        </connection>
+        
         <connection>
                 <from>/onTheFlyRecognition/crop:o</from>
                 <to>/sparseCoder/img:i</to>
@@ -93,6 +127,12 @@
 
         <connection>
                 <from>/sparseCoder/code:o</from>
+                <to>/linearClassifier/features:i</to>
+                <protocol>tcp</protocol>
+        </connection> 
+        
+         <connection>
+                <from>/caffeCoder/code:o</from>
                 <to>/linearClassifier/features:i</to>
                 <protocol>tcp</protocol>
         </connection> 

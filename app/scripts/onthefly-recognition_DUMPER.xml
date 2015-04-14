@@ -1,6 +1,6 @@
 
 <application>
-<name>On The Fly Recognition Giulia Dumper</name>
+<name>On The Fly Recognition iCub World Dumper</name>
 
         <!-- Modules -->
         
@@ -47,6 +47,24 @@
                 <tag>dumperCodes</tag>
         </module>
 		
+		<!-- Hand -->
+		
+		
+	    <module>
+                <name>dataDumper</name>
+				<parameters> --name /dump/ --dir /dumping/ --type bottle</parameters>
+                <node>localhost</node>
+                <tag>dumperHandPos</tag>
+        </module>
+        
+        <module>
+                <name>dataDumper</name>
+				<parameters> --name /dump/ --dir /dumping/ --type bottle</parameters>
+                <node>localhost</node>
+                <tag>dumperHandForce</tag>
+        </module>
+        
+        
         <!-- Connections -->
 
 		<connection>

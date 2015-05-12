@@ -12,58 +12,59 @@
         <module>
                 <name>motionCUT</name>
                 <parameters>--name motionCUT/left --coverXratio 0.7 --coverYratio 0.7 --framesPersistence 2 --numThreads 5 --nodesStep 6</parameters>
-                <node>icub-b1</node>
+                <node>icub12</node>
                 <tag>motionCUTLeft</tag>
         </module>
 	
 		<module>
                 <name>nearBlobber</name>
-                <node>icub-cuda</node>
-                <tag>nearBlobber</tag>
+                <node>icub-tesla</node>
+                <tag>nearBlobberLeft</tag>
         </module>
         
 		<module>
                 <name>actionsRenderingEngine</name>
-                <node>icub15</node>
+                <node>icub16</node>
                 <tag>actionsRenderingEngine</tag>
         </module>
 		
 		<module>
                 <name>managerOnTheFly_iCubWorld</name>  
-				<parameters>--observe_human_time_training 20 --observe_human_time_classify 15 --single_operator_time 5</parameters>
-                <node>icub15</node>
+				<parameters>--observe_human_time_training 10 --observe_human_time_classify 5 --single_operator_time 5</parameters>
+                <node>icub-tesla</node>
                 <tag>managerOnTheFly_iCubWorld</tag>
         </module>
 		
 		<module>
-                <name>sparseCoder</name>
-                <node>icub-cuda</node>
-                <tag>sparseCoder</tag>
-        </module>
-		
-		<module>
                 <name>caffeCoder</name>
-                <node>icub-cuda</node>
+                <node>icub-tesla</node>
                 <tag>caffeCoder</tag>
         </module>
         
 		<module>
                 <name>linearClassifierModule</name>
-                <node>icub-cuda</node>
+                <nosde>icub-tesla</node>
                 <tag>linearClassifierModule</tag>
         </module>
 
         <module>
                 <name>yarpview</name>
-                <parameters>--name /onTheFlyRecognition/view</parameters>
-                <node>icub15</node>
+                <parameters>--name /opt/nearBlobber</parameters>
+                <node>icub16</node>
+                <tag>viewer_blobber</tag>
+        </module>
+
+        <module>
+                <name>yarpview</name>
+                <parameters>--name /view/onTheFlyRecognition</parameters>
+                <node>icub16</node>
                 <tag>viewer_box</tag>
         </module>
 
         <module>
                 <name>yarpview</name>
-                <parametergiuliaboxs>--name /onTheFlyRecognition/confidence</parameters>
-                <node>icub15</node>
+                <parametergiuliaboxs>--name /confidence/onTheFlyRecognition</parameters>
+                <node>icub16</node>
                 <tag>viewer_hist</tag>
         </module>
 		
@@ -93,6 +94,12 @@
                 <protocol>udp</protocol>
         </connection>
 
+        <connection>
+                <from>/nearBlobber/blobs:o</from>
+                <to>/actionsRenderingEngine/left/blobs:i</to>
+                <protocol>udp</protocol>
+        </connection>
+
 
         <!-- Coding -->
         <connection>
@@ -118,18 +125,6 @@
                 <to>/caffeCoder/img:i</to>
                 <protocol>mcast</protocol>
         </connection>
-        
-        <connection>
-                <from>/onTheFlyRecognition/crop:o</from>
-                <to>/sparseCoder/img:i</to>
-                <protocol>mcast</protocol>
-        </connection>
-
-        <connection>
-                <from>/sparseCoder/code:o</from>
-                <to>/linearClassifier/features:i</to>
-                <protocol>tcp</protocol>
-        </connection> 
         
          <connection>
                 <from>/caffeCoder/code:o</from>
@@ -183,13 +178,19 @@
 		
         <connection>
                 <from>/onTheFlyRecognition/show:o</from>
-                <to>/onTheFlyRecognition/view</to>
+                <to>/view/onTheFlyRecognition</to>
                 <protocol>mcast</protocol>
         </connection>
         
         <connection>
                 <from>/onTheFlyRecognition/confidence:o</from>
-                <to>/onTheFlyRecognition/confidence</to>
+                <to>/confidence/onTheFlyRecognition</to>
+                <protocol>mcast</protocol>
+        </connection>
+
+         <connection>
+                <from>/nearBlobber/opt:o</from>
+                <to>/opt/nearBlobber</to>
                 <protocol>mcast</protocol>
         </connection>
         

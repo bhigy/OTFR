@@ -43,7 +43,7 @@
         
 		<module>
                 <name>linearClassifierModule</name>
-                <nosde>icub-tesla</node>
+                <node>icub-tesla</node>
                 <tag>linearClassifierModule</tag>
         </module>
 

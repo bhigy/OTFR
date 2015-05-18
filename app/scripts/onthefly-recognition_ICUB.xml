@@ -63,7 +63,7 @@
 
         <module>
                 <name>yarpview</name>
-                <parametergiuliaboxs>--name /confidence/onTheFlyRecognition</parameters>
+                <parameters>--name /confidence/onTheFlyRecognition</parameters>
                 <node>icub16</node>
                 <tag>viewer_hist</tag>
         </module>

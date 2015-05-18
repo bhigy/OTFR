@@ -18,7 +18,7 @@
 	
 		<module>
                 <name>nearBlobber</name>
-                <node>icub-tesla</node>
+                <node>icub12</node>
                 <tag>nearBlobberLeft</tag>
         </module>
         
@@ -50,7 +50,7 @@
         <module>
                 <name>yarpview</name>
                 <parameters>--name /opt/nearBlobber</parameters>
-                <node>icub16</node>
+                <node>icub12</node>
                 <tag>viewer_blobber</tag>
         </module>
 
@@ -77,7 +77,6 @@
                 <to>/motionCUT/left/img:i</to>
                 <protocol>mcast</protocol>
         </connection> 
-        
         
         <!-- nearBlobber -->
         <connection>

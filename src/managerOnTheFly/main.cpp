@@ -85,6 +85,8 @@ private:
     //input
     BufferedPort<Image>                 port_in_img;
     BufferedPort<Bottle>                port_in_blobs;
+    BufferedPort<Bottle>				port_in_lh_tactile;
+    BufferedPort<Bottle>				port_in_lh_torque;
 
     //output
     Port                                port_out_show;
@@ -92,6 +94,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     Port                                port_out_img;
     Port                                port_out_imginfo;
+	Port								port_out_left_hand;
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     //rpc
     RpcClient                           port_rpc_are_get_hand;
@@ -137,6 +140,8 @@ public:
         //input
         port_in_img.open(("/"+name+"/img:i").c_str());
         port_in_blobs.open(("/"+name+"/blobs:i").c_str());
+        port_in_lh_tactile.open(("/"+name+"/lh_tactile:i").c_str());
+        port_in_lh_torque.open(("/"+name+"/lh_torque:i").c_str());
 
         //output
         port_out_show.open(("/"+name+"/show:o").c_str());
@@ -144,6 +149,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////////////////
         port_out_img.open(("/"+name+"/img:o").c_str());
         port_out_imginfo.open(("/"+name+"/imginfo:o").c_str());
+        port_out_left_hand.open(("/"+name+"/left_hand:o").c_str());
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //rpc
@@ -251,6 +257,11 @@ public:
 
                     port_out_imginfo.write(imginfo);
                     port_out_img.write(*img);
+
+					if (mode == MODE_ROBOT)
+					{
+						port_out_left_hand.setEnvelope(stamp);
+					}
                     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
                 }
@@ -370,6 +381,7 @@ public:
                     //////////////////////////////////////////////////////////////////////////////////////////////////////
         port_out_img.interrupt();
         port_out_imginfo.interrupt();
+        port_out_left_hand.interrupt();
                     //////////////////////////////////////////////////////////////////////////////////////////////////////
         port_rpc_are_get_hand.interrupt();
         mutex.post();
@@ -386,6 +398,7 @@ public:
                     //////////////////////////////////////////////////////////////////////////////////////////////////////
         port_out_img.close();
         port_out_imginfo.close();
+        port_out_left_hand.interrupt();
                     //////////////////////////////////////////////////////////////////////////////////////////////////////
         port_rpc_are_get_hand.close();
         mutex.post();
@@ -736,6 +749,7 @@ private:
             command.addString("expect");
             command.addString("near");
             command.addString("no_sacc");
+            command.addString("left");
             port_rpc_are_cmd.write(command,reply);
 
             if(reply.size()==0 || reply.get(0).asVocab()!=ACK)

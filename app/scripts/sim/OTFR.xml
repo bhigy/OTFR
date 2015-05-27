@@ -1,6 +1,6 @@
 
 <application>
-<name>On The Fly Recognition iCubWorld</name>
+<name>OTFR Sim</name>
 
         <dependencies>
                 <port>/icub/camcalib/right/out</port>
@@ -53,7 +53,7 @@
                 <parameters>--name /view/icub/camcalib/right/out</parameters>
                 <node>localhost</node>
                 <tag>camera_viewer</tag>
-        </module>	
+        </module>
 		
         <!-- Connections -->
 

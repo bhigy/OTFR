@@ -1,0 +1,38 @@
+<application>
+	<!-- Generic information-->
+	<name>Visualizers Sim</name>
+	<description>Different visualization interface</description>
+	<version>1.0</version>
+
+	<authors>
+		<author email="Bertrand.higy@iit.it">Bertrand HIGY</author>
+	</authors>
+
+	<!-- Required modules -->
+	<module>
+		<name>yarpview</name>
+		<parameters>--name /left_eye</parameters>
+		<node>localhost</node>
+		<stdio></stdio>
+		<prefix>/view</prefix>
+	</module>
+
+	<module>
+		<name>iCubSkinGui</name>
+		<parameters></parameters>
+		<node>localhost</node>
+		<tag>skin_gui_lh</tag>
+	</module>
+
+	<!-- Required connections -->
+	<connection>
+		<from>/icub/camcalib/left/out</from>
+		<to>/view/left_eye</to>
+	</connection>
+
+	<connection>
+		<from>/icub/skin/left_hand</from>
+		<to>/skinGui/left_hand:i</to>
+	</connection>
+
+</application>

@@ -1,0 +1,55 @@
+  <application>
+      <!-- Generic information-->
+      <name>Tactual Datadumper</name>
+      <description>Acquires datadumps from tactual data, that's to say tactile and proprioceptive data</description>
+      <version>1.0</version>
+
+      <authors>
+          <author email="bertrand.higy@iit.it">Bertrand HIGY</author>
+      </authors>
+
+      <!-- Required modules -->
+      <module>
+          <name>yarpdatadumper</name>
+          <parameters>--name /left_hand</parameters>
+          <node>localhost</node>
+          <prefix>/dump/skin</prefix>
+          <tag>yarpdatadumpeur left_hand</tag>
+      </module>
+      
+      <module>
+          <name>yarpdatadumper</name>
+          <parameters>--name /left_hand_comp</parameters>
+          <node>localhost</node>
+          <prefix>/dump/skin</prefix>
+          <tag>yarpdatadumpeur left_hand_comp</tag>
+      </module>
+      
+      <module>
+          <name>yarpdatadumper</name>
+          <parameters>--name /left_arm</parameters>
+          <node>localhost</node>
+          <prefix>/dump</prefix>
+          <tag>yarpdatadumpeur left_arm</tag>
+      </module>
+
+      <!-- Required connections -->
+      <connection>
+          <from>/icub/skin/left_hand</from>
+          <to>/dump/skin/left_hand</to>
+          <protocol>udp</protocol>
+      </connection>
+      
+      <connection>
+          <from>/icub/skin/left_hand_comp</from>
+          <to>/dump/skin/left_hand_comp</to>
+          <protocol>udp</protocol>
+      </connection>
+      
+      <connection>
+          <from>/icub/left_arm/state:o</from>
+          <to>/dump/left_arm</to>
+          <protocol>udp</protocol>
+      </connection>
+
+  </application>

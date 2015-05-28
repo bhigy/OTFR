@@ -1,38 +1,56 @@
 <application>
 	<!-- Generic information-->
-	<name>Visualizers Sim</name>
+	<name>Visualizers</name>
 	<description>Different visualization interface</description>
-	<version>1.0</version>
-
-	<authors>
-		<author email="Bertrand.higy@iit.it">Bertrand HIGY</author>
-	</authors>
 
 	<!-- Required modules -->
 	<module>
 		<name>yarpview</name>
 		<parameters>--name /left_eye</parameters>
-		<node>localhost</node>
-		<stdio></stdio>
+		<node>icub16</node>
+		<prefix>/view</prefix>
+	</module>
+	
+	<module>
+		<name>yarpview</name>
+		<parameters>--name /right_eye</parameters>
+		<node>icub16</node>
 		<prefix>/view</prefix>
 	</module>
 
 	<module>
 		<name>iCubSkinGui</name>
-		<parameters></parameters>
-		<node>localhost</node>
+		<parameters>--from left_hand.ini --useCalibration</parameters>
+		<node>icub16</node>
 		<tag>skin_gui_lh</tag>
+	</module>
+
+	<module>
+		<name>iCubSkinGui</name>
+		<parameters>--from right_hand.ini --useCalibration</parameters>
+		<node>icub16</node>
+		<tag>skin_gui_rh</tag>
 	</module>
 
 	<!-- Required connections -->
 	<connection>
-		<from>/icub/camcalib/left/out</from>
+		<from>/icub/cam/left</from>
 		<to>/view/left_eye</to>
 	</connection>
 
 	<connection>
-		<from>/icub/skin/left_hand</from>
+		<from>/icub/cam/right</from>
+		<to>/view/right_eye</to>
+	</connection>
+
+	<connection>
+		<from>/icub/skin/left_hand_comp</from>
 		<to>/skinGui/left_hand:i</to>
+	</connection>
+
+	<connection>
+		<from>/icub/skin/right_hand_comp</from>
+		<to>/skinGui/right_hand:i</to>
 	</connection>
 
 </application>

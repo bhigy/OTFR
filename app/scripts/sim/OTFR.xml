@@ -9,16 +9,23 @@
         <!-- Modules -->
         
         <module>
-                <name>managerOnTheFly_iCubWorld</name>  
-		<parameters>--observe_human_time_classify 20</parameters>             
-                <node>localhost</node>
-                <tag>manager</tag>
+            <name>actionsRenderingEngine</name>  
+			<parameters>--robot icubSim</parameters>             
+            <node>localhost</node>
+            <tag>are</tag>
         </module>
         
         <module>
-                <name>sparseCoder_iCubWorld</name>
-                <node>localhost</node>
-                <tag>image_coder</tag>
+            <name>managerOnTheFly_iCubWorld</name>  
+			<parameters>--observe_human_time_classify 20</parameters>             
+            <node>localhost</node>
+            <tag>manager</tag>
+        </module>
+        
+        <module>
+            <name>sparseCoder_iCubWorld</name>
+            <node>localhost</node>
+            <tag>image_coder</tag>
         </module>
 
 		<module>

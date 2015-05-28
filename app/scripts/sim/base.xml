@@ -1,33 +1,17 @@
-  <application>
-      <!-- Generic information-->
-      <name>ApplicationName</name>
-      <description>Template Application</description>
-      <version></version>
+<application>
+	<!-- Generic information-->
+	<name>Base Sim</name>
+	<description>Basic modules to run a simulation</description>
 
-      <authors>
-          <author email=""> author.name </author>
-      </authors>
+	<!-- Required modules -->
+	<module>
+		<name>yarpserver</name>
+		<node>localhost</node>
+	</module>
 
-      <!-- Required modules -->
-      <module>
-          <name>Module_Name</name>
-          <parameters></parameters>
-          <node></node>
-          <stdio></stdio>
-          <prefix></prefix>
-      </module>
+	<module>
+		<name>iCub_SIM</name>
+		<node>localhost</node>
+	</module>
 
-      <!-- Embedded applications -->
-      <application>
-          <name>Application_Name</name>
-          <prefix></prefix>
-       </application>
-
-      <!-- Required connections -->
-      <connection>
-          <from></from>
-          <to></to>
-          <protocol></protocol>
-      </connection>
-
-  </application>
+</application>

@@ -15,28 +15,33 @@
  * Public License for more details
 */
 
-#include <yarp/os/Network.h>
-#include <yarp/os/ResourceFinder.h>
+#ifndef MANAGER_MODULE_H
+#define MANAGER_MODULE_H
 
-#include "manager_module.h"
+#include <yarp/os/Port.h>
+#include <yarp/os/RFModule.h>
+#include <yarp/os/RpcClient.h>
+#include <yarp/os/RpcServer.h>
+
+#include "manager_thread.h"
 
 using namespace yarp::os;
 
-int main(int argc, char *argv[])
+class ManagerModule: public RFModule
 {
-   Network yarp;
+	public:
+		ManagerModule();
+		bool configure(ResourceFinder &rf);
+		bool interruptModule();
+		bool close();
+		bool respond(const Bottle &command, Bottle &reply);
+		double getPeriod();
+		bool   updateModule();
 
-   if (!yarp.checkNetwork())
-       return -1;
+	protected:
+		ManagerThread       *manager_thr;
+		RpcServer           port_rpc_human;
+		Port                port_rpc;
+};
 
-   ResourceFinder rf;
-   rf.setVerbose(true);
-   rf.setDefaultContext("onthefly-recognition");
-   rf.setDefaultConfigFile("config.ini");
-   rf.configure(argc,argv);
-   rf.setDefault("name","onTheFlyRecognition");
-   ManagerModule mod;
-
-   return mod.runModule(rf);
-}
-
+#endif

@@ -35,19 +35,19 @@
 
       <!-- Required connections -->
       <connection>
-          <from>/icubSim/skin/left_hand</from>
+          <from>/icub/skin/left_hand</from>
           <to>/dump/skin/left_hand</to>
           <protocol>udp</protocol>
       </connection>
       
       <connection>
-          <from>/icubSim/skin/left_hand_comp</from>
+          <from>/icub/skin/left_hand_comp</from>
           <to>/dump/skin/left_hand_comp</to>
           <protocol>udp</protocol>
       </connection>
       
       <connection>
-          <from>/icubSim/left_arm/state:o</from>
+          <from>/icub/left_arm/state:o</from>
           <to>/dump/left_arm</to>
           <protocol>udp</protocol>
       </connection>

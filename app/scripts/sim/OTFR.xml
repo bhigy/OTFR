@@ -10,7 +10,6 @@
     
     <module>
         <name>actionsRenderingEngine</name>  
-		<parameters>--robot icubSim</parameters>             
         <node>localhost</node>
         <tag>are</tag>
     </module>

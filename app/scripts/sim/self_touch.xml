@@ -51,7 +51,7 @@
 
       <!-- Required connections -->
       <connection>
-          <from>/icubSim/skin/left_hand_comp</from>
+          <from>/icub/skin/left_hand_comp</from>
           <to>/skinGui/left_hand:i</to>
           <protocol></protocol>
       </connection>

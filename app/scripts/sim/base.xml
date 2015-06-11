@@ -12,6 +12,7 @@
 	<module>
 		<name>iCub_SIM</name>
 		<node>localhost</node>
+		<parameters>--name icub</parameters>
 	</module>
 
 </application>

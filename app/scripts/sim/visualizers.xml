@@ -34,22 +34,22 @@
 
 	<!-- Required connections -->
 	<connection>
-		<from>/icubSim/cam/left</from>
+		<from>/icub/cam/left</from>
 		<to>/view/left_eye</to>
 	</connection>
 
 	<connection>
-		<from>/icubSim/cam/right</from>
+		<from>/icub/cam/right</from>
 		<to>/view/right_eye</to>
 	</connection>
 
 	<connection>
-		<from>/icubSim/skin/left_hand_comp</from>
+		<from>/icub/skin/left_hand_comp</from>
 		<to>/skinGui/left_hand:i</to>
 	</connection>
 
 	<connection>
-		<from>/icubSim/skin/right_hand_comp</from>
+		<from>/icub/skin/right_hand_comp</from>
 		<to>/skinGui/right_hand:i</to>
 	</connection>
 

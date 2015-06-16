@@ -15,7 +15,7 @@ include_directories(${PROJECT_SOURCE_DIR})
 
 set(folder_source main.cpp)
 #source_group("Source Files" FILES ${folder_source})
-add_executable(${PROJECTNAME} ${folder_source} transformer_thread.cpp storer_thread.cpp manager_thread.cpp manager_module.cpp)
+add_executable(${PROJECTNAME} ${folder_source} transformer_thread.cpp storer_thread.cpp manager_thread.cpp manager_module.cpp manager_event.cpp)
 
 target_link_libraries(${PROJECTNAME} ${OpenCV_LIBRARIES} ${YARP_LIBRARIES})
 

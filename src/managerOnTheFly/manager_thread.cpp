@@ -48,16 +48,20 @@ bool ManagerThread::threadInit()
     //Ports
     //-----------------------------------------------------------
     //rpc
-    port_rpc_are.open(("/"+name+"/are/rpc").c_str());
-    port_rpc_are_get.open(("/"+name+"/are/get:io").c_str());
-    port_rpc_are_cmd.open(("/"+name+"/are/cmd:io").c_str());
-    port_rpc_classifier.open(("/"+name+"/classifier:io").c_str());
+    port_rpc_are.open(("/" + name + "/are/rpc").c_str());
+    port_rpc_are_get.open(("/" + name + "/are/get:io").c_str());
+    port_rpc_are_cmd.open(("/" + name + "/are/cmd:io").c_str());
+    port_rpc_classifier.open(("/" + name + "/classifier:io").c_str());
 
-    //speech
-    port_out_speech.open(("/"+name+"/speech:o").c_str());
+    //output
+    port_out_speech.open(("/" + name + "/speech:o").c_str());
+    port_out_events.open(("/" + name + "/events:o").c_str());
+    
+    //input
+    port_in_timestamp.open(("/" + name + "/timestamp:i").c_str());
     //------------------------------------------------------------
 
-    thr_transformer->interruptCoding();
+    interruptCoding();
 
     set_state(STATE_IDLE);
     set_mode(MODE_HUMAN_IDLE);
@@ -97,6 +101,7 @@ bool ManagerThread::execReq(const Bottle &command, Bottle &reply)
 
 bool ManagerThread::execHumanCmd(Bottle &command, Bottle &reply)
 {
+	fireEvent(ManagerEvent(ManagerEvent::execute_command, command.toString()));
     switch(command.get(0).asVocab())
     {
         case CMD_IDLE:
@@ -224,14 +229,14 @@ bool ManagerThread::execHumanCmd(Bottle &command, Bottle &reply)
 
             Bottle cmd_are,reply_are;
             cmd_are.addString("idle");
-            port_rpc_are_cmd.write(cmd_are,reply_are);
+            issueAreCmd(cmd_are,reply_are);
 
             if(reply_are.size()>0 && reply_are.get(0).asVocab()==ACK)
             {
                 reply_are.clear();
                 cmd_are.clear();
                 cmd_are.addString("home");
-                port_rpc_are_cmd.write(cmd_are,reply_are);
+                issueAreCmd(cmd_are,reply_are);
 
                 if(reply_are.size()>0 && reply_are.get(0).asVocab()==ACK)
                 {
@@ -256,7 +261,7 @@ bool ManagerThread::execHumanCmd(Bottle &command, Bottle &reply)
             Bottle cmd_are,reply_are;
 
             cmd_are.addString("idle");
-            port_rpc_are_cmd.write(cmd_are,reply_are);
+            issueAreCmd(cmd_are,reply_are);
             if(reply_are.size()>0 && reply_are.get(0).asVocab()==ACK)
             {
                 set_mode(MODE_HUMAN_IDLE);
@@ -409,14 +414,14 @@ bool ManagerThread::observe_robot()
         command.addString("expect");
         command.addString("near");
         command.addString("no_sacc");
-        port_rpc_are_cmd.write(command,reply);
+        issueAreCmd(command,reply);
 
         if(reply.size()==0 || reply.get(0).asVocab()!=ACK)
             return false;
     }
 
     //resume feature storing
-    thr_transformer->resumeCoding();
+    resumeCoding();
 
     //perform the exploration of the hand
     reply.clear();
@@ -424,10 +429,10 @@ bool ManagerThread::observe_robot()
     command.addString("explore");
     command.addString("hand");
     command.addString("no_sacc");
-    port_rpc_are_cmd.write(command,reply);
+    issueAreCmd(command,reply);
 
     //interrupt feature storing
-    thr_transformer->interruptCoding();
+    interruptCoding();
 
     return true;
 }
@@ -441,7 +446,7 @@ bool ManagerThread::observe_human()
         Bottle cmd_are,reply_are;
 
         cmd_are.addString("idle");
-        port_rpc_are_cmd.write(cmd_are,reply_are);
+        issueAreCmd(cmd_are,reply_are);
         if(reply_are.size()>0 && reply_are.get(0).asVocab()==ACK)
         {
             reply_are.clear();
@@ -449,7 +454,7 @@ bool ManagerThread::observe_human()
             cmd_are.addString("track");
             cmd_are.addString("motion");
             cmd_are.addString("no_sacc");
-            port_rpc_are_cmd.write(cmd_are,reply_are);
+            issueAreCmd(cmd_are,reply_are);
             if(reply_are.size()>0 && reply_are.get(0).asVocab()==ACK)
             {
                 set_mode(MODE_HUMAN_TRACK);
@@ -466,19 +471,19 @@ bool ManagerThread::observe_human()
         speak("I'm waiting for you to position...");
         Time::delay(single_operator_time);
         speak("*************************** Image acquisition started ***************************");
-        thr_transformer->resumeCoding();
+        resumeCoding();
     }
 
     if (state==STATE_OBSERVING)
     {
         Time::delay(observe_human_time_training);
-        thr_transformer->interruptCoding();
+        interruptCoding();
 
         // begin tracking code
         Bottle cmd_are,reply_are;
 
         cmd_are.addString("idle");
-        port_rpc_are_cmd.write(cmd_are,reply_are);
+        issueAreCmd(cmd_are,reply_are);
         if(reply_are.size()>0 && reply_are.get(0).asVocab()==ACK)
         {
             set_mode(MODE_HUMAN_IDLE);
@@ -551,16 +556,16 @@ bool ManagerThread::observe()
 bool ManagerThread::complete_robot()
 {
 
-    thr_transformer->interruptCoding();
+    interruptCoding();
 
     //just drop the object
     Bottle command,reply;
     command.addString("give");
-    port_rpc_are_cmd.write(command,reply);
-
+    issueAreCmd(command,reply);
+    
     command.clear();
     command.addString("home");
-    port_rpc_are_cmd.write(command,reply);
+    issueAreCmd(command,reply);
 
     return true;
 }
@@ -568,13 +573,13 @@ bool ManagerThread::complete_robot()
 bool ManagerThread::complete_human()
 {
 
-    thr_transformer->interruptCoding();
+    interruptCoding();
 
     // begin tracking code
     Bottle cmd_are,reply_are;
 
     cmd_are.addString("idle");
-    port_rpc_are_cmd.write(cmd_are,reply_are);
+    issueAreCmd(cmd_are,reply_are);
     if(reply_are.size()>0 && reply_are.get(0).asVocab()==ACK)
     {
         set_mode(MODE_HUMAN_IDLE);
@@ -698,4 +703,31 @@ bool ManagerThread::train()
 
     set_state(STATE_IDLE);
     return done;
+}
+
+void ManagerThread::fireEvent(const ManagerEvent &e)
+{
+	// Write event
+    Bottle event;
+    event.addString(e.toString());
+    port_out_events.write(event);
+}
+
+void ManagerThread::issueAreCmd(Bottle& cmd, Bottle& reply)
+{
+	fireEvent(ManagerEvent(ManagerEvent::issue_command, cmd.toString()));
+	port_rpc_are_cmd.write(cmd, reply);
+	fireEvent(ManagerEvent(ManagerEvent::command_done, reply.toString()));
+}
+
+void ManagerThread::resumeCoding()
+{
+	fireEvent(ManagerEvent(ManagerEvent::resume_coding));
+	thr_transformer->resumeCoding();
+}
+
+void ManagerThread::interruptCoding()
+{
+	fireEvent(ManagerEvent(ManagerEvent::interrupt_coding));
+	thr_transformer->interruptCoding();
 }

@@ -9,49 +9,16 @@
     <!-- Modules -->
     
     <module>
-        <name>actionsRenderingEngine</name>  
+        <name>yarpdataplayer</name>  
         <node>localhost</node>
-        <tag>are</tag>
+        <tag>yarpdataplayer</tag>
     </module>
     
     <module>
         <name>managerOnTheFly_iCubWorld</name>  
-		<parameters>--observe_human_time_classify 20</parameters>             
+		<parameters>--name otfr --observe_human_time_classify 20</parameters>             
         <node>localhost</node>
         <tag>manager</tag>
-    </module>
-    
-    <module>
-        <name>sparseCoder_iCubWorld</name>
-        <node>localhost</node>
-        <tag>image_coder</tag>
-    </module>
-
-	<module>
-        <name>linearClassifierModule_iCubWorld</name>
-        <node>localhost</node>
-        <tag>classifier</tag>
-    </module>
-
-    <module>
-        <name>yarpview</name>
-        <parameters>--name /view/onTheFlyRecognition/confidence:o</parameters>
-        <node>localhost</node>
-        <tag>conf_viewer</tag>
-    </module>
-
-    <module>
-        <name>yarpview</name>
-        <parameters>--name /view/onTheFlyRecognition/show:o</parameters>
-        <node>localhost</node>
-        <tag>image_viewer</tag>
-    </module>
-
-    <module>
-        <name>yarpview</name>
-        <parameters>--name /view/onTheFlyRecognition/crop:o</parameters>
-        <node>localhost</node>
-        <tag>crop_viewer</tag>
     </module>
 
     <module>
@@ -60,6 +27,13 @@
         <node>localhost</node>
         <tag>camera_viewer</tag>
     </module>
+    
+    <module>
+        <name>yarpdatadumper</name>
+        <parameters>--name /dump/events</parameters>
+        <node>localhost</node>
+        <tag>datadumper</tag>
+    </module>
 	
     <!-- Connections -->
 
@@ -67,66 +41,48 @@
 	
     <connection>
         <from>/icub/camcalib/right/out</from>
-        <to>/onTheFlyRecognition/img:i</to>
+        <to>/otfr/img:i</to>
         <protocol>mcast</protocol>
     </connection>
 
     <connection>
         <from>/motionCUT/right/blobs:o</from>
-        <to>/onTheFlyRecognition/blobs:i</to>
+        <to>/otfr/blobs:i</to>
         <protocol>mcast</protocol>
     </connection>
 
-    <connection>
-        <from>/onTheFlyRecognition/crop:o</from>
-        <to>/sparseCoder/img:i</to>
-        <protocol>mcast</protocol>
-    </connection>
-
-    <connection>
-        <from>/sparseCoder/code:o</from>
-        <to>/linearClassifier/features:i</to>
-        <protocol>mcast</protocol>
-    </connection> 
-	
-    <connection>
-        <from>/linearClassifier/scores:o</from>
-        <to>/onTheFlyRecognition/scores:i</to>
-        <protocol>mcast</protocol>
-    </connection>
-	
 	<!-- Rpc -->
 	
 	<connection>
-        <from>/onTheFlyRecognition/classifier:io</from>
-        <to>/linearClassifier/rpc</to>
+        <from>/otfr/are/cmd:io</from>
+        <to>/are/cmd</to>
         <protocol>tcp</protocol>
     </connection>
-	
-	
+    
+    <connection>
+        <from>/otfr/are/get:io</from>
+        <to>/are/get</to>
+        <protocol>tcp</protocol>
+    </connection>
+    
+    <connection>
+        <from>/otfr/classifier:io</from>
+        <to>/clas/rpc</to>
+        <protocol>tcp</protocol>
+    </connection>
+
 	<!-- Visualization -->
-	
-	<connection>
-        <from>/onTheFlyRecognition/confidence:o</from>
-        <to>/view/onTheFlyRecognition/confidence:o</to>
-        <protocol>tcp</protocol>
-    </connection>
-	
-    <connection>
-        <from>/onTheFlyRecognition/show:o</from>
-        <to>/view/onTheFlyRecognition/show:o</to>
-        <protocol>tcp</protocol>
-    </connection>
-	
-    <connection>
-        <from>/onTheFlyRecognition/crop:o</from>
-        <to>/view/onTheFlyRecognition/crop:o</to>
-        <protocol>mcast</protocol>
-    </connection>
 	
     <connection>
         <from>/icub/camcalib/right/out</from>
         <to>/view/icub/camcalib/right/out</to>
+        <protocol>mcast</protocol>
+    </connection>
+    
+    <!-- Datadump -->
+    <connection>
+        <from>/otfr/events:o</from>
+        <to>/dump/events</to>
         <protocol>mcast</protocol>
     </connection>
 		

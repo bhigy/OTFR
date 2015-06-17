@@ -21,6 +21,7 @@
 #include "manager_module.h"
 
 using namespace yarp::os;
+using namespace std;
 
 int main(int argc, char *argv[])
 {

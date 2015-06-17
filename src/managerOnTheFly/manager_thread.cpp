@@ -23,6 +23,9 @@
 #include "constants.h"
 #include "manager_thread.h"
 
+using namespace std;
+using namespace yarp::os;
+
 ManagerThread::ManagerThread(ResourceFinder &_rf): RateThread(10),rf(_rf)
 {
 }

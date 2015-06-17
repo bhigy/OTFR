@@ -20,28 +20,25 @@
 
 #include <yarp/os/Port.h>
 #include <yarp/os/RFModule.h>
-#include <yarp/os/RpcClient.h>
 #include <yarp/os/RpcServer.h>
 
 #include "manager_thread.h"
 
-using namespace yarp::os;
-
-class ManagerModule: public RFModule
+class ManagerModule: public yarp::os::RFModule
 {
 	public:
 		ManagerModule();
-		bool configure(ResourceFinder &rf);
+		bool configure(yarp::os::ResourceFinder &rf);
 		bool interruptModule();
 		bool close();
-		bool respond(const Bottle &command, Bottle &reply);
+		bool respond(const yarp::os::Bottle &command, yarp::os::Bottle &reply);
 		double getPeriod();
 		bool   updateModule();
 
 	protected:
 		ManagerThread       *manager_thr;
-		RpcServer           port_rpc_human;
-		Port                port_rpc;
+		yarp::os::RpcServer	port_rpc_human;
+		yarp::os::Port      port_rpc;
 };
 
 #endif

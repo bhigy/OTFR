@@ -15,23 +15,27 @@
  * Public License for more details
 */
 
-#include "manager_event.h"
 
-using namespace std;
+#include <yarp/os/Network.h>
+#include <yarp/os/ResourceFinder.h>
 
-const string ManagerEvent::names[] = {"issue_command", "command_done", "resume_coding", "interrupt_coding", "execute_command"};
-		
+#include "bot_rpc_server_module.h"
 
-ManagerEvent::ManagerEvent(EventType type, string details): type_(type), details_(details)
+using namespace yarp::os;
+
+int main(int argc, char *argv[])
 {
-}
+   Network yarp;
 
-string ManagerEvent::toString() const
-{
-	string s;
-	if (details_ == "")
-		s = names[type_];
-	else
-		s = names[type_] + " " + details_;
-	return s;
+   if (!yarp.checkNetwork())
+       return -1;
+
+   ResourceFinder rf;
+   rf.setVerbose(true);
+   rf.setDefaultContext("botRpcServer/conf");
+   rf.setDefaultConfigFile("config.ini");
+   rf.configure(argc,argv);
+   BotRpcServerModule server;
+
+   return server.runModule(rf);
 }

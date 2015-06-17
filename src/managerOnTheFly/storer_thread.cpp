@@ -23,6 +23,8 @@
 
 #include "storer_thread.h"
 
+using namespace std;
+using namespace yarp::os;
 using namespace yarp::sig;
 
 StorerThread::StorerThread(ResourceFinder &_rf)

@@ -25,6 +25,10 @@
 #include "constants.h"
 #include "transformer_thread.h"
 
+using namespace std;
+using namespace yarp::os;
+using namespace yarp::sig;
+
 TransformerThread::TransformerThread(ResourceFinder &_rf) : RateThread(5),rf(_rf)
 {
 }
@@ -308,6 +312,7 @@ bool TransformerThread::interruptCoding()
 
 bool TransformerThread::resumeCoding()
 {
+	
     coding_interrupted=false;
     return true;
 }

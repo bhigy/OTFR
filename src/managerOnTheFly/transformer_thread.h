@@ -19,6 +19,7 @@
 */
 
 #include <iostream>
+
 #include <yarp/os/Bottle.h>
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/Port.h>
@@ -27,59 +28,55 @@
 #include <yarp/os/Semaphore.h>
 #include <yarp/sig/Image.h>
 
-using namespace std;
-using namespace yarp::os;
-using namespace yarp::sig;
-
-class TransformerThread: public RateThread
+class TransformerThread: public yarp::os::RateThread
 {
 public:
-    TransformerThread(ResourceFinder &_rf);
+    TransformerThread(yarp::os::ResourceFinder &_rf);
 
     bool threadInit();
     void run();
-    bool set_current_class(string _current_class);
-    bool set_true_class(string _true_class);
+    bool set_current_class(std::string _current_class);
+    bool set_true_class(std::string _true_class);
     bool set_mode(int _mode);
     bool set_state(int _state);
-    bool get_current_class(string &_current_class);
-    bool get_true_class(string &_true_class);
-    bool execReq(const Bottle &command, Bottle &reply);
+    bool get_current_class(std::string &_current_class);
+    bool get_true_class(std::string &_true_class);
+    bool execReq(const yarp::os::Bottle &command, yarp::os::Bottle &reply);
     void interrupt();
     void threadRelease();
     bool interruptCoding();
     bool resumeCoding();
     
 private:
-    ResourceFinder                      &rf;
-    Semaphore                           mutex;
-    bool                                verbose;
+    yarp::os::ResourceFinder					&rf;
+    yarp::os::Semaphore							mutex;
+    bool										verbose;
 
     //input
-    BufferedPort<Image>                 port_in_img;
-    BufferedPort<Bottle>                port_in_blobs;
+    yarp::os::BufferedPort<yarp::sig::Image>	port_in_img;
+    yarp::os::BufferedPort<yarp::os::Bottle>    port_in_blobs;
 
     //output
-    Port                                port_out_show;
-    Port                                port_out_crop;
-    Port                                port_out_img;
-    Port                                port_out_imginfo;
+    yarp::os::Port								port_out_show;
+    yarp::os::Port								port_out_crop;
+    yarp::os::Port								port_out_img;
+    yarp::os::Port								port_out_imginfo;
     
     //rpc
-    RpcClient                           port_rpc_are_get_hand;
+    yarp::os::RpcClient							port_rpc_are_get_hand;
 
-    int                                 radius_crop; 
-    int                                 radius_crop_robot;
-    int                                 radius_crop_human;
-    ImageOf<PixelRgb>                   img_crop;
-    string                              current_class;
-    string                              true_class;
-    bool                                coding_interrupted;
-    int                                 mode;
-    int                                 state;
-    double                              blink_init_time;
-    double                              blink_visible_time;
-    double                              blink_invisible_time;
+    int											radius_crop; 
+    int											radius_crop_robot;
+    int											radius_crop_human;
+    yarp::sig::ImageOf<yarp::sig::PixelRgb>		img_crop;
+    std::string									current_class;
+    std::string									true_class;
+    bool										coding_interrupted;
+    int											mode;
+    int											state;
+    double										blink_init_time;
+    double										blink_visible_time;
+    double										blink_invisible_time;
 };
 
 #endif

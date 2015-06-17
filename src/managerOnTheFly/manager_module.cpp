@@ -19,6 +19,9 @@
 
 #include "manager_module.h"
 
+using namespace std;
+using namespace yarp::os;
+
 ManagerModule::ManagerModule()
 {}
 

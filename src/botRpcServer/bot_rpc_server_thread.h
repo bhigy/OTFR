@@ -1,3 +1,6 @@
+#ifndef AUTOMATIC_RPC_SERVER_THREAD_H
+#define AUTOMATIC_RPC_SERVER_THREAD_H
+
 /* 
  * Copyright (C) 2015 iCub Facility - Istituto Italiano di Tecnologia
  * Author: Bertand HIGY
@@ -15,23 +18,22 @@
  * Public License for more details
 */
 
-#include "manager_event.h"
-
-using namespace std;
-
-const string ManagerEvent::names[] = {"issue_command", "command_done", "resume_coding", "interrupt_coding", "execute_command"};
-		
-
-ManagerEvent::ManagerEvent(EventType type, string details): type_(type), details_(details)
+#include <string>
+#include <yarp/os/Property.h>
+#include <yarp/os/RpcServer.h>
+#include <yarp/os/Thread.h>
+  
+class BotRpcServerThread : public yarp::os::Thread
 {
-}
+	public:
+	   BotRpcServerThread(yarp::os::RpcServer *rpc_port, std::string *default_answer,  yarp::os::Property *dictionary);   
+	   void run(); 
+	   
+   private:
+	   /* thread parameters */
+	   std::string *default_answer_;
+	   yarp::os::Property *dictionary_;
+	   yarp::os::RpcServer *rpc_port_;
+};
 
-string ManagerEvent::toString() const
-{
-	string s;
-	if (details_ == "")
-		s = names[type_];
-	else
-		s = names[type_] + " " + details_;
-	return s;
-}
+#endif

@@ -27,45 +27,42 @@
 #include <yarp/os/RateThread.h>
 #include <yarp/os/Semaphore.h>
 
-using namespace std;
-using namespace yarp::os;
-
-class StorerThread: public RateThread
+class StorerThread: public yarp::os::RateThread
 {
 public:
-    StorerThread(ResourceFinder &_rf);
+    StorerThread(yarp::os::ResourceFinder &_rf);
     bool threadInit();
     void run();
-    bool set_current_class(string _current_class);
-    bool get_current_class(string &_current_class);
+    bool set_current_class(std::string _current_class);
+    bool get_current_class(std::string &_current_class);
     bool reset_scores();
     bool set_mode(int _mode);
     bool set_state(int _state);
-    bool execReq(const Bottle &command, Bottle &reply);
+    bool execReq(const yarp::os::Bottle &command, yarp::os::Bottle &reply);
     void interrupt();
     void threadRelease();
     
 private:
-    ResourceFinder                      &rf;
-    Semaphore                           mutex;
-    bool                                verbose;
+    yarp::os::ResourceFinder                    &rf;
+    yarp::os::Semaphore                         mutex;
+    bool                                		verbose;
 
     //input
-    BufferedPort<Bottle>                port_in_scores;
+    yarp::os::BufferedPort<yarp::os::Bottle>	port_in_scores;
 
     //output
-    Port                                port_out_confidence;
+    yarp::os::Port                              port_out_confidence;
 
-    int                                 bufferSize;
-    list<Bottle>                        scores_buffer;
+    int                                 		bufferSize;
+    std::list<yarp::os::Bottle>                 scores_buffer;
 
-    string                              current_class;
+    std::string                              	current_class;
 
-    int                                 mode;
-    int                                 state;
+    int                                 		mode;
+    int                                 		state;
 
-    int                                 confidence_width;
-    int                                 confidence_height;
+    int                                 		confidence_width;
+    int                                 		confidence_height;
 };
 
 #endif

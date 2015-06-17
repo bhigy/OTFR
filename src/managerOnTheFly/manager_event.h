@@ -20,8 +20,6 @@
 
 #include <string>
 
-using namespace std;
-
 class ManagerEvent
 {
 	public:
@@ -34,14 +32,14 @@ class ManagerEvent
 			execute_command
 		};
 		
-		ManagerEvent(EventType type, string details = "");
-		string toString() const;
+		ManagerEvent(EventType type, std::string details = "");
+		std::string toString() const;
 		
 	protected:
-		static const string names[5];
+		static const std::string names[5];
 		
 		EventType type_;
-		string details_;
+		std::string details_;
 };
 
 #endif

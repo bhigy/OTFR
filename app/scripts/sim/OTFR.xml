@@ -20,6 +20,27 @@
         <node>localhost</node>
         <tag>manager</tag>
     </module>
+    
+    <module>
+        <name>botRpcServer</name>
+        <parameters>--name are --port /cmd:io</parameters>
+        <node>localhost</node>
+        <tag>are</tag>
+    </module>
+    
+    <module>
+        <name>botRpcServer</name>
+        <parameters>--name are --port /get:io --defaultAnswer nack</parameters>
+        <node>localhost</node>
+        <tag>are</tag>
+    </module>
+    
+    <module>
+        <name>botRpcServer</name>
+        <parameters>--name classifier --port /rpc</parameters>
+        <node>localhost</node>
+        <tag>classifier</tag>
+    </module>
 
     <module>
         <name>yarpview</name>
@@ -55,19 +76,19 @@
 	
 	<connection>
         <from>/otfr/are/cmd:io</from>
-        <to>/are/cmd</to>
+        <to>/are/cmd:io</to>
         <protocol>tcp</protocol>
     </connection>
     
     <connection>
         <from>/otfr/are/get:io</from>
-        <to>/are/get</to>
+        <to>/are/get:io</to>
         <protocol>tcp</protocol>
     </connection>
     
     <connection>
         <from>/otfr/classifier:io</from>
-        <to>/clas/rpc</to>
+        <to>/classifier/rpc</to>
         <protocol>tcp</protocol>
     </connection>
 

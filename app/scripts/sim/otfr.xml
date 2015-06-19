@@ -23,7 +23,7 @@
     
     <module>
         <name>botRpcServer</name>
-        <parameters>--name are --port /cmd:io</parameters>
+        <parameters>--name are --port /cmd:io --delay 2</parameters>
         <node>localhost</node>
         <tag>are</tag>
     </module>
@@ -52,6 +52,13 @@
     <module>
         <name>yarpdatadumper</name>
         <parameters>--name /dump/events</parameters>
+        <node>localhost</node>
+        <tag>datadumper</tag>
+    </module>
+    
+    <module>
+        <name>yarpdatadumper</name>
+        <parameters>--name /dump/img --type image</parameters>
         <node>localhost</node>
         <tag>datadumper</tag>
     </module>
@@ -104,7 +111,19 @@
     <connection>
         <from>/otfr/events:o</from>
         <to>/dump/events</to>
-        <protocol>mcast</protocol>
+        <protocol>udp</protocol>
+    </connection>
+    
+    <connection>
+        <from>/icub/camcalib/right/out</from>
+        <to>/dump/img</to>
+        <protocol>udp+recv.portmonitor+type.lua+file.data_monitor</protocol>
+    </connection>
+    
+    <connection>
+        <from>/otfr/events:o</from>
+        <to>/dump/img</to>
+        <protocol>udp+recv.portmonitor+type.lua+file.event_monitor</protocol>
     </connection>
 		
 </application>

@@ -33,6 +33,8 @@ class ManagerEvent
 		};
 		
 		ManagerEvent(EventType type, std::string details = "");
+		std::string getType() const;
+		std::string getDetails() const;
 		std::string toString() const;
 		
 	protected:

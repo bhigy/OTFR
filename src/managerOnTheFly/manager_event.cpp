@@ -26,6 +26,16 @@ ManagerEvent::ManagerEvent(EventType type, string details): type_(type), details
 {
 }
 
+string ManagerEvent::getType() const
+{
+	return names[type_];
+}
+
+string ManagerEvent::getDetails() const
+{
+	return details_;
+}
+
 string ManagerEvent::toString() const
 {
 	string s;

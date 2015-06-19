@@ -410,13 +410,13 @@ bool ManagerThread::observe_robot()
         return false;
 
     //if the robot is not holding an object then ask the human to give one
-    if(reply.get(0).asVocab()!=ACK)
     {
         reply.clear();
         command.clear();
         command.addString("expect");
         command.addString("near");
         command.addString("no_sacc");
+		command.addString("left");
         issueAreCmd(command,reply);
 
         if(reply.size()==0 || reply.get(0).asVocab()!=ACK)
@@ -712,7 +712,8 @@ void ManagerThread::fireEvent(const ManagerEvent &e)
 {
 	// Write event
     Bottle event;
-    event.addString(e.toString());
+    event.addString(e.getType());
+	event.addString(e.getDetails());
     port_out_events.write(event);
 }
 

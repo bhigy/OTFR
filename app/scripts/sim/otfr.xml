@@ -37,6 +37,13 @@
     
     <module>
         <name>botRpcServer</name>
+        <parameters>--name are --port /hand:io --defaultAnswer "ack bla 100 100"</parameters>
+        <node>localhost</node>
+        <tag>are</tag>
+    </module>
+    
+    <module>
+        <name>botRpcServer</name>
         <parameters>--name classifier --port /rpc</parameters>
         <node>localhost</node>
         <tag>classifier</tag>
@@ -47,20 +54,6 @@
         <parameters>--name /view/icub/camcalib/right/out</parameters>
         <node>localhost</node>
         <tag>camera_viewer</tag>
-    </module>
-    
-    <module>
-        <name>yarpdatadumper</name>
-        <parameters>--name /dump/events</parameters>
-        <node>localhost</node>
-        <tag>datadumper</tag>
-    </module>
-    
-    <module>
-        <name>yarpdatadumper</name>
-        <parameters>--name /dump/img --type image</parameters>
-        <node>localhost</node>
-        <tag>datadumper</tag>
     </module>
 	
     <!-- Connections -->
@@ -94,6 +87,12 @@
     </connection>
     
     <connection>
+        <from>/otfr/are/hand:io</from>
+        <to>/are/hand:io</to>
+        <protocol>tcp</protocol>
+    </connection>
+    
+    <connection>
         <from>/otfr/classifier:io</from>
         <to>/classifier/rpc</to>
         <protocol>tcp</protocol>
@@ -105,25 +104,6 @@
         <from>/icub/camcalib/right/out</from>
         <to>/view/icub/camcalib/right/out</to>
         <protocol>mcast</protocol>
-    </connection>
-    
-    <!-- Datadump -->
-    <connection>
-        <from>/otfr/events:o</from>
-        <to>/dump/events</to>
-        <protocol>udp</protocol>
-    </connection>
-    
-    <connection>
-        <from>/icub/camcalib/right/out</from>
-        <to>/dump/img</to>
-        <protocol>udp+recv.portmonitor+type.lua+file.data_monitor</protocol>
-    </connection>
-    
-    <connection>
-        <from>/otfr/events:o</from>
-        <to>/dump/img</to>
-        <protocol>udp+recv.portmonitor+type.lua+file.event_monitor</protocol>
     </connection>
 		
 </application>

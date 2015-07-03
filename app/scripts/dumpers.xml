@@ -1,0 +1,151 @@
+<application>
+	<name>OTFR Dumpers</name>
+
+    <dependencies>
+        <port>/icub/skin/left_hand</port>
+        <port>/icub/skin/left_hand_comp</port>
+        <port>/icub/left_arm/state:o</port>
+        <port>/icub/left_arm/analog:o</port>
+        <port>/otfr/events:o</port>
+    </dependencies>
+
+    <!-- Modules -->
+    
+    <module>
+		<name>yarpdatadumper</name>
+		<parameters> --name /otfr/img:i --type image</parameters>
+		<node>localhost</node>
+		<prefix>/dump</prefix>
+		<tag>datadumper imgs</tag>
+	</module>
+	
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters> --name /otfr/imginfo:i --type bottle</parameters>
+		<node>localhost</node>
+		<prefix>/dump</prefix>
+		<tag>datadumper imginfos</tag>
+	</module>
+	
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters> --name /otfr/crop:i --type image</parameters>
+		<node>localhost</node>
+		<prefix>/dump</prefix>
+		<tag>datadunmper crops</tag>
+	</module>
+
+    <module>
+        <name>yarpdatadumper</name>
+        <parameters>--name /otfr/events</parameters>
+        <node>localhost</node>
+        <prefix>/dump</prefix>
+        <tag>datadumper events</tag>
+    </module>
+    
+    <module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /skin/left_hand</parameters>
+		<node>localhost</node>
+		<prefix>/dump</prefix>
+		<tag>datadumpeur left_hand</tag>
+	</module>
+	
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /skin/left_hand_comp</parameters>
+		<node>localhost</node>
+		<prefix>/dump</prefix>
+		<tag>datadumpeur left_hand_comp</tag>
+	</module>
+	
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /left_arm/state</parameters>
+		<node>localhost</node>
+		<prefix>/dump</prefix>
+		<tag>datadumpeur left_arm/state:o</tag>
+	</module>
+	
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /left_arm/analog</parameters>
+		<node>localhost</node>
+		<prefix>/dump</prefix>
+		<tag>datadumpeur left_arm/analog:o</tag>
+	</module>
+
+    <!-- Connections -->
+    
+    <connection>
+		<from>/otfr/img:o</from>
+		<to>/dump/otfr/img:i</to>
+		<protocol>mcast</protocol>
+	</connection>
+
+	<connection>
+		<from>/otfr/imginfo:o</from>
+		<to>/dump/otfr/imginfo:i</to>
+		<protocol>tcp</protocol>
+	</connection>
+
+	<connection>
+		<from>/otfr/crop:o</from>
+		<to>/dump/otfr/crop:i</to>
+		<protocol>mcast</protocol>
+	</connection>
+
+	<connection>
+        <from>/otfr/events:o</from>
+        <to>/dump/otfr/events</to>
+    </connection>
+    
+    <connection>
+        <from>/icub/skin/left_hand</from>
+        <to>/dump/skin/left_hand</to>
+        <protocol>tcp+recv.portmonitor+type.lua+file.data_monitor</protocol>
+    </connection>
+    
+    <connection>
+        <from>/otfr/events:o</from>
+        <to>/dump/skin/left_hand</to>
+        <protocol>tcp+recv.portmonitor+type.lua+file.event_monitor</protocol>
+    </connection>
+    
+    <connection>
+        <from>/icub/skin/left_hand_comp</from>
+        <to>/dump/skin/left_hand_comp</to>
+        <protocol>tcp+recv.portmonitor+type.lua+file.data_monitor</protocol>
+    </connection>
+    
+    <connection>
+        <from>/otfr/events:o</from>
+        <to>/dump/skin/left_hand_comp</to>
+        <protocol>tcp+recv.portmonitor+type.lua+file.event_monitor</protocol>
+    </connection>
+	
+	<connection>
+        <from>/icub/left_arm/state:o</from>
+        <to>/dump/left_arm/state</to>
+        <protocol>tcp+recv.portmonitor+type.lua+file.data_monitor</protocol>
+    </connection>
+    
+    <connection>
+        <from>/otfr/events:o</from>
+        <to>/dump/left_arm/state</to>
+        <protocol>tcp+recv.portmonitor+type.lua+file.event_monitor</protocol>
+    </connection>
+    
+    <connection>
+        <from>/icub/left_arm/analog:o</from>
+        <to>/dump/left_arm/analog</to>
+        <protocol>tcp+recv.portmonitor+type.lua+file.data_monitor</protocol>
+    </connection>
+    
+    <connection>
+        <from>/otfr/events:o</from>
+        <to>/dump/left_arm/analog</to>
+        <protocol>tcp+recv.portmonitor+type.lua+file.event_monitor</protocol>
+    </connection>
+        
+</application>

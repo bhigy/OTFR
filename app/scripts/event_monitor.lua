@@ -40,13 +40,11 @@ PortMonitor.accept = function(thing)
 	bt = thing:asBottle()
     if dumpActivated == true then
     	if giveStarted == false then
-    		print("1a")
 			if  bt:size() == 2 and bt:get(0):asString() == "issue_command"
 			and bt:get(1):asString() == "give" then
 		    	giveStarted = true
 		   	end
        	else
-       		print("1b")
        		if  bt:size() == 2 and bt:get(0):asString() == "command_done" then
        			dumpActivated = false
 		    	giveStarted = false
@@ -57,7 +55,6 @@ PortMonitor.accept = function(thing)
     else
     	if  bt:size() == 2 and bt:get(0):asString() == "issue_command" 
     	and string.sub(bt:get(1):asString(),1,6) == "expect" then
-    		print("2")
     		dumpActivated = true
         	PortMonitor.setEvent("e_dump_activated")
 	   	end
